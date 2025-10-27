@@ -1,6 +1,5 @@
 import axios from "axios";
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
+import { API_URL } from "./config";
 
 export type UserRole = 'super_admin' | 'admin' | 'user';
 
@@ -201,4 +200,3 @@ export const adminApi = {
     return response.data.user;
   },
 };
-
