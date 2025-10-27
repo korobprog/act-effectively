@@ -30,10 +30,13 @@ WORKDIR /var/www
 
 # Copy composer files and install dependencies
 COPY composer.json composer.lock ./
-RUN composer install --no-dev --optimize-autoloader --no-interaction
+RUN composer install --no-dev --optimize-autoloader --no-interaction --no-scripts
 
 # Copy application files
 COPY . .
+
+# Now run composer dump-autoload to execute scripts with artisan available
+RUN composer dump-autoload --optimize --no-interaction
 
 # Set permissions for storage and cache directories
 RUN mkdir -p storage/logs \
