@@ -38,7 +38,7 @@ services:
       context: ./frontend
       dockerfile: Dockerfile.prod
       args:
-        - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://localhost:8000}
+        - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-https://api.act-effectively.books-ved.ru/api}
     container_name: next_offline_frontend
     restart: unless-stopped
     environment:

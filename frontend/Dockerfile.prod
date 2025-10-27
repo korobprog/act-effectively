@@ -13,7 +13,8 @@ RUN npm ci
 COPY . .
 
 # Build arguments for Next.js public variables
-ARG NEXT_PUBLIC_API_URL=https://api.act-effectively.books-ved.ru/api
+# Default to localhost for development, override in docker-compose or build args
+ARG NEXT_PUBLIC_API_URL=http://localhost:8000/api
 ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
 
 # Build Next.js application
