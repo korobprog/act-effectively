@@ -15,7 +15,9 @@ COPY . .
 # Build arguments for Next.js public variables
 # Default to localhost for development, override in docker-compose or build args
 ARG NEXT_PUBLIC_API_URL=http://localhost:8000/api
+ARG NEXT_PUBLIC_VAPID_PUBLIC_KEY=
 ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+ENV NEXT_PUBLIC_VAPID_PUBLIC_KEY=${NEXT_PUBLIC_VAPID_PUBLIC_KEY}
 
 # Build Next.js application
 RUN npm run build

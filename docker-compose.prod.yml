@@ -39,6 +39,7 @@ services:
       dockerfile: Dockerfile.prod
       args:
         - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-https://api.act-effectively.books-ved.ru/api}
+        - NEXT_PUBLIC_VAPID_PUBLIC_KEY=${NEXT_PUBLIC_VAPID_PUBLIC_KEY}
     container_name: next_offline_frontend
     restart: unless-stopped
     environment:
