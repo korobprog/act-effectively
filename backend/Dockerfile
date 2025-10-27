@@ -32,15 +32,31 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Set working directory
 WORKDIR /var/www
 
-# Copy existing application directory contents
+# Copy application files
 COPY . /var/www
 
-# Copy existing application directory permissions
-COPY --chown=www-data:www-data . /var/www
+# Set permissions for storage and cache directories
+RUN mkdir -p /var/www/storage/logs && \
+    mkdir -p /var/www/storage/framework/cache && \
+    mkdir -p /var/www/storage/framework/sessions && \
+    mkdir -p /var/www/storage/framework/views && \
+    chmod -R 775 /var/www/storage && \
+    chmod -R 775 /var/www/bootstrap/cache
 
-# Change current user to www
-USER www-data
+# Create entrypoint script
+RUN echo '#!/bin/bash\n\
+set -e\n\
+\n\
+# Fix permissions on storage directories\n\
+chmod -R 775 /var/www/storage 2>/dev/null || true\n\
+chmod -R 775 /var/www/bootstrap/cache 2>/dev/null || true\n\
+\n\
+# Start Laravel server\n\
+exec php artisan serve --host=0.0.0.0 --port=8000\n' > /entrypoint.sh && \
+    chmod +x /entrypoint.sh
 
-# Expose port 8000 and start php-fpm server
+# Expose port 8000
 EXPOSE 8000
-CMD php artisan serve --host=0.0.0.0 --port=8000
+
+# Use entrypoint script
+ENTRYPOINT ["/bin/bash", "/entrypoint.sh"]

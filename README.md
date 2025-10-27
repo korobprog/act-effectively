@@ -32,13 +32,30 @@ next-offline/
 
 ### 1. Запуск бэкенда (Laravel API)
 
+**Вариант 1: Через npm (самый простой)**
 ```bash
-cd backend
+npm run backend:start
+```
+
+**Вариант 2: Через скрипт**
+```bash
+./start-backend.sh
+```
+
+**Вариант 3: Ручной запуск**
+```bash
 docker-compose up -d
 docker-compose exec app composer install
-docker-compose exec app cp .env.example .env
 docker-compose exec app php artisan key:generate
 docker-compose exec app php artisan migrate
+```
+
+**Другие полезные команды для бэкенда:**
+```bash
+npm run backend:stop      # Остановить бэкенд
+npm run backend:logs      # Просмотр логов
+npm run backend:restart   # Перезапустить бэкенд
+npm run backend:status    # Статус контейнеров
 ```
 
 ### 2. Запуск фронтенда (Next.js)
@@ -95,7 +112,14 @@ npm run lint         # Проверка кода
 
 #### Бэкенд:
 ```bash
-cd backend
+# Управление бэкендом через npm:
+npm run backend:start     # Запустить бэкенд
+npm run backend:stop      # Остановить бэкенд
+npm run backend:logs      # Просмотр логов
+npm run backend:restart   # Перезапустить
+npm run backend:status    # Статус
+
+# Или через Docker напрямую:
 docker-compose exec app php artisan migrate
 docker-compose exec app php artisan make:controller ExampleController
 docker-compose exec app php artisan make:model Example
