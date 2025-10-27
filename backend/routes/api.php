@@ -5,6 +5,7 @@ use App\Http\Controllers\AuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\NotificationController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -42,3 +43,19 @@ Route::get('/health', [ApiController::class, 'health']);
 Route::get('/test', [ApiController::class, 'test']);
 Route::get('/features', [ApiController::class, 'features']);
 Route::middleware('auth:sanctum')->get('/user-info', [ApiController::class, 'user']);
+
+// Push notification routes
+Route::middleware('auth:sanctum')->group(function () {
+    // Admin routes (только для супер-администратора)
+    Route::middleware(function ($request, $next) {
+        if (!$request->user()->isSuperAdmin()) {
+            return response()->json(['message' => 'Доступ запрещен'], 403);
+        }
+        return $next($request);
+    })->group(function () {
+        Route::post('/notifications/send/user/{id}', [NotificationController::class, 'sendToUser']);
+        Route::post('/notifications/send/all-users', [NotificationController::class, 'sendToAllUsers']);
+        Route::post('/notifications/send/all-admins', [NotificationController::class, 'sendToAllAdmins']);
+        Route::get('/notifications/subscribers', [NotificationController::class, 'subscribers']);
+    });
+});
