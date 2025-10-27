@@ -196,7 +196,6 @@ export default function Home() {
       <div className="pointer-events-none absolute inset-x-0 top-[-18rem] -z-10 flex justify-center blur-3xl sm:top-[-12rem]">
         <div className="aspect-[1155/678] w-[72rem] bg-gradient-to-r from-sky-200 via-indigo-200 to-purple-200 opacity-50" />
       </div>
-
       <div className="relative mx-auto max-w-6xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8 lg:py-24">
         <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(320px,400px)] lg:items-start">
           <section className="flex flex-col gap-10 text-center lg:text-left">
