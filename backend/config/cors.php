@@ -16,6 +16,7 @@ return [
         env('APP_URL'),
         'http://localhost:3000',
         'http://localhost:3001',
+        'https://act-effectively.books-ved.ru',
     ]),
 
     'allowed_origins_patterns' => [],
