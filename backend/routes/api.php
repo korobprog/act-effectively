@@ -42,6 +42,7 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::get('/health', [ApiController::class, 'health']);
 Route::get('/test', [ApiController::class, 'test']);
 Route::get('/features', [ApiController::class, 'features']);
+Route::get('/vapid-key', [ApiController::class, 'vapidKey']);
 Route::middleware('auth:sanctum')->get('/user-info', [ApiController::class, 'user']);
 
 // Push notification routes

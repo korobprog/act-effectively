@@ -72,4 +72,14 @@ class ApiController extends Controller
             'new_api_active' => true
         ]);
     }
+
+    /**
+     * Get VAPID public key for push notifications
+     */
+    public function vapidKey(): JsonResponse
+    {
+        return response()->json([
+            'vapid_public_key' => env('VAPID_PUBLIC_KEY', '')
+        ]);
+    }
 }

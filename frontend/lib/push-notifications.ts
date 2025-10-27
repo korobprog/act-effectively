@@ -67,8 +67,20 @@ export async function subscribeToPushNotifications(): Promise<boolean> {
         const readyRegistration = await navigator.serviceWorker.ready;
         console.log('Service Worker is ready', readyRegistration);
         
-        const vapidKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY || '';
-        console.log('VAPID Key:', vapidKey ? vapidKey.substring(0, 20) + '...' : 'NOT FOUND');
+        // Get VAPID key from env or backend
+        let vapidKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY || '';
+        
+        // If not in env, fetch from backend
+        if (!vapidKey) {
+            console.log('VAPID key not found in env, fetching from backend...');
+            try {
+                const response = await axios.get(`${API_URL}/vapid-key`);
+                vapidKey = response.data.vapid_public_key;
+                console.log('VAPID Key fetched from backend:', vapidKey ? vapidKey.substring(0, 20) + '...' : 'NOT FOUND');
+            } catch (error) {
+                console.error('Failed to fetch VAPID key from backend:', error);
+            }
+        }
         
         if (!vapidKey) {
             console.error('VAPID public key is missing');
