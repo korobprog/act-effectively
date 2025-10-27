@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -10,35 +9,24 @@ use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasApiTokens, HasFactory, Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
+    const ROLE_SUPER_ADMIN = 'super_admin';
+    const ROLE_ADMIN = 'admin';
+    const ROLE_USER = 'user';
+
     protected $fillable = [
         'name',
         'email',
         'password',
+        'role',
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
     protected function casts(): array
     {
         return [
@@ -47,21 +35,29 @@ class User extends Authenticatable
         ];
     }
 
-    /**
-     * Check if user is an internal team member
-     */
-    public function isInternalTeamMember(): bool
+    public function isSuperAdmin(): bool
     {
-        // Add your logic here - for now, return false
-        return false;
+        return $this->role === self::ROLE_SUPER_ADMIN;
     }
 
-    /**
-     * Check if user is a high traffic customer
-     */
-    public function isHighTrafficCustomer(): bool
+    public function isAdmin(): bool
     {
-        // Add your logic here - for now, return false
-        return false;
+        return in_array($this->role, [self::ROLE_SUPER_ADMIN, self::ROLE_ADMIN]);
+    }
+
+    public function isUser(): bool
+    {
+        return $this->role === self::ROLE_USER;
+    }
+
+    // Методы для проверки прав
+    public function hasAdminAccess(): bool
+    {
+        return $this->isAdmin();
+    }
+
+    public function canManageAdmins(): bool
+    {
+        return $this->isSuperAdmin();
     }
 }

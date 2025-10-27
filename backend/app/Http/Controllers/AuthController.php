@@ -16,15 +16,16 @@ class AuthController extends Controller
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8',
         ]);
-
+    
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'role' => User::ROLE_USER,
         ]);
-
+    
         $token = $user->createToken('auth_token')->plainTextToken;
-
+    
         return response()->json([
             'user' => $user,
             'message' => 'Пользователь успешно зарегистрирован',
