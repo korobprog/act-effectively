@@ -78,8 +78,16 @@ class ApiController extends Controller
      */
     public function vapidKey(): JsonResponse
     {
+        $publicKey = trim((string) config('webpush.vapid.public_key', ''));
+
+        if ($publicKey === '') {
+            return response()->json([
+                'message' => 'VAPID public key is not configured.',
+            ], 500);
+        }
+
         return response()->json([
-            'vapid_public_key' => env('VAPID_PUBLIC_KEY', '')
+            'vapid_public_key' => $publicKey,
         ]);
     }
 }
