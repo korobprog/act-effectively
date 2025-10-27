@@ -32,29 +32,24 @@ WORKDIR /var/www
 COPY composer.json composer.lock ./
 RUN composer install --no-dev --optimize-autoloader --no-interaction --no-scripts
 
+# Create non-root user first
+RUN usermod -u 1000 www-data \
+    && groupmod -g 1000 www-data
+
 # Copy application files
 COPY . .
 
 # Now run composer dump-autoload to execute scripts with artisan available
 RUN composer dump-autoload --optimize --no-interaction
 
-# Set permissions for storage and cache directories
-RUN mkdir -p storage/logs \
-    storage/framework/cache \
-    storage/framework/sessions \
-    storage/framework/views \
-    bootstrap/cache \
-    && chown -R www-data:www-data storage bootstrap/cache \
+# Set permissions for all files and directories
+RUN chown -R www-data:www-data /var/www \
     && chmod -R 775 storage bootstrap/cache
 
 # Optimize Laravel for production
 RUN php artisan config:cache || true \
     && php artisan route:cache || true \
     && php artisan view:cache || true
-
-# Create non-root user
-RUN usermod -u 1000 www-data \
-    && groupmod -g 1000 www-data
 
 USER www-data
 
