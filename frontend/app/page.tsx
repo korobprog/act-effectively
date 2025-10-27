@@ -9,6 +9,13 @@ export default function Home() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [subscriptionStatus, setSubscriptionStatus] = useState<string>("");
+  const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
+
+  const navigation = [
+    { href: "#features", label: "Возможности" },
+    { href: "#offline", label: "Офлайн режим" },
+    { href: "#push", label: "Push-центр" },
+  ];
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -65,12 +72,132 @@ export default function Home() {
     );
   };
 
+  const handleToggleMobileNav = () => {
+    setIsMobileNavOpen((prev) => !prev);
+  };
+
+  const handleCloseMobileNav = () => {
+    setIsMobileNavOpen(false);
+  };
+
   return (
     <main className="relative min-h-screen overflow-hidden bg-gradient-to-br from-sky-50 via-white to-indigo-100">
+      <header className="sticky top-0 z-20 border-b border-slate-200/60 bg-white/80 backdrop-blur">
+        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
+          <Link href="/" className="flex items-center gap-2 text-lg font-semibold text-slate-900">
+            <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-indigo-600 text-white shadow-sm">
+              AE
+            </span>
+            <span className="hidden sm:inline">Act Effectively</span>
+          </Link>
+
+          <nav className="hidden items-center gap-6 text-sm font-medium text-slate-600 sm:flex">
+            {navigation.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className="transition hover:text-indigo-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+              >
+                {item.label}
+              </Link>
+            ))}
+            {isAuthenticated ? (
+              <Link
+                href="#profile"
+                className="inline-flex items-center rounded-full border border-indigo-200 bg-white px-4 py-2 text-indigo-700 shadow-sm transition hover:border-indigo-300 hover:text-indigo-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+              >
+                Личный кабинет
+              </Link>
+            ) : (
+              <Link
+                href="/auth/login"
+                className="inline-flex items-center rounded-full bg-indigo-600 px-4 py-2 text-white shadow-sm transition hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+              >
+                Войти
+              </Link>
+            )}
+          </nav>
+
+          <button
+            type="button"
+            onClick={handleToggleMobileNav}
+            className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 shadow-sm transition hover:border-slate-300 hover:text-slate-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-400 sm:hidden"
+            aria-expanded={isMobileNavOpen}
+            aria-label="Переключить меню"
+          >
+            <span className="sr-only">Меню</span>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="h-5 w-5"
+              aria-label={isMobileNavOpen ? "Закрыть меню" : "Открыть меню"}
+              role="img"
+            >
+              {isMobileNavOpen ? (
+                <path d="M18 6 6 18M6 6l12 12" />
+              ) : (
+                <>
+                  <line x1="4" x2="20" y1="6" y2="6" />
+                  <line x1="4" x2="20" y1="12" y2="12" />
+                  <line x1="4" x2="20" y1="18" y2="18" />
+                </>
+              )}
+            </svg>
+          </button>
+        </div>
+
+        <div className={`${isMobileNavOpen ? "max-h-80" : "max-h-0"} overflow-hidden border-t border-slate-200/60 transition-[max-height] duration-300 ease-in-out sm:hidden`}>
+          <nav className="space-y-2 px-4 py-4 text-sm font-medium text-slate-600">
+            {navigation.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                onClick={handleCloseMobileNav}
+                className="flex items-center rounded-xl px-3 py-2 transition hover:bg-indigo-50 hover:text-indigo-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+              >
+                {item.label}
+              </Link>
+            ))}
+            <div className="flex flex-col gap-2 pt-2">
+              {isAuthenticated ? (
+                <Link
+                  href="#profile"
+                  onClick={handleCloseMobileNav}
+                  className="inline-flex items-center justify-center rounded-full border border-indigo-200 bg-white px-4 py-2 text-indigo-700 shadow-sm transition hover:border-indigo-300 hover:text-indigo-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                >
+                  Личный кабинет
+                </Link>
+              ) : (
+                <>
+                  <Link
+                    href="/auth/login"
+                    onClick={handleCloseMobileNav}
+                    className="inline-flex items-center justify-center rounded-full bg-indigo-600 px-4 py-2 text-white shadow-sm transition hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                  >
+                    Войти
+                  </Link>
+                  <Link
+                    href="/auth/register"
+                    onClick={handleCloseMobileNav}
+                    className="inline-flex items-center justify-center rounded-full border border-indigo-200 bg-white px-4 py-2 text-indigo-700 shadow-sm transition hover:border-indigo-300 hover:text-indigo-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                  >
+                    Регистрация
+                  </Link>
+                </>
+              )}
+            </div>
+          </nav>
+        </div>
+      </header>
+
       <div className="pointer-events-none absolute inset-x-0 top-[-18rem] -z-10 flex justify-center blur-3xl sm:top-[-12rem]">
         <div className="aspect-[1155/678] w-[72rem] bg-gradient-to-r from-sky-200 via-indigo-200 to-purple-200 opacity-50" />
       </div>
-
       <div className="relative mx-auto max-w-6xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8 lg:py-24">
         <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(320px,400px)] lg:items-start">
           <section className="flex flex-col gap-10 text-center lg:text-left">
@@ -111,7 +238,7 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="grid gap-4 rounded-3xl bg-white/70 p-6 shadow-lg backdrop-blur-sm sm:grid-cols-2">
+            <div className="grid gap-4 rounded-3xl bg-white/70 p-6 shadow-lg backdrop-blur-sm sm:grid-cols-2" id="features">
               <div className="flex items-start gap-3">
                 <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-100 text-2xl">
                   📡
@@ -142,7 +269,7 @@ export default function Home() {
           </section>
 
           <aside className="lg:sticky lg:top-24">
-            <div className="rounded-3xl bg-white/80 p-6 shadow-xl backdrop-blur">
+            <div className="rounded-3xl bg-white/80 p-6 shadow-xl backdrop-blur" id="profile">
               {isAuthenticated && user ? (
                 <div className="space-y-6 text-left">
                   <div className="space-y-3">
@@ -161,36 +288,62 @@ export default function Home() {
                   </div>
 
                   {userHelpers.isSuperAdmin(user) && (
-                    <div className="space-y-3 rounded-2xl border border-red-100 bg-red-50/70 p-4">
-                      <h3 className="text-lg font-semibold text-red-900">
-                        🔐 Панель супер-администратора
-                      </h3>
-                      <p className="text-sm text-red-700">
-                        Полный контроль над доступом и пользователями.
-                      </p>
-                      <Link
-                        href="/admin"
-                        className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-red-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600"
-                      >
-                        Управление администраторами
-                      </Link>
+                    <div className="space-y-4 rounded-2xl border border-red-100 bg-red-50/70 p-4">
+                      <div className="space-y-1">
+                        <h3 className="text-lg font-semibold text-red-900">
+                          🔐 Панель супер-администратора
+                        </h3>
+                        <p className="text-sm text-red-700">
+                          Полный контроль над доступом и пользователями.
+                        </p>
+                      </div>
+                      <div className="grid gap-2 sm:grid-cols-2">
+                        <Link
+                          href="/admin"
+                          className="inline-flex items-center justify-center gap-2 rounded-full bg-red-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600"
+                        >
+                          Панель администрирования
+                        </Link>
+                        <Link
+                          href="/admin/notifications"
+                          className="inline-flex items-center justify-center gap-2 rounded-full border border-red-200 bg-white px-4 py-2 text-sm font-semibold text-red-700 transition hover:border-red-300 hover:text-red-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600"
+                        >
+                          Отправить push
+                        </Link>
+                      </div>
                     </div>
                   )}
 
                   {userHelpers.isAdmin(user) &&
                     !userHelpers.isSuperAdmin(user) && (
-                      <div className="space-y-2 rounded-2xl border border-purple-100 bg-purple-50/70 p-4">
-                        <h3 className="text-lg font-semibold text-purple-900">
-                          👨‍💼 Панель администратора
-                        </h3>
-                        <p className="text-sm text-purple-700">
-                          Управляйте задачами и помогайте команде.
-                        </p>
+                      <div className="space-y-4 rounded-2xl border border-purple-100 bg-purple-50/70 p-4">
+                        <div className="space-y-1">
+                          <h3 className="text-lg font-semibold text-purple-900">
+                            👨‍💼 Панель администратора
+                          </h3>
+                          <p className="text-sm text-purple-700">
+                            Управляйте задачами команды и отправляйте уведомления.
+                          </p>
+                        </div>
+                        <div className="grid gap-2 sm:grid-cols-2">
+                          <Link
+                            href="/admin"
+                            className="inline-flex items-center justify-center gap-2 rounded-full bg-purple-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-purple-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-600"
+                          >
+                            Панель админа
+                          </Link>
+                          <Link
+                            href="/admin/notifications"
+                            className="inline-flex items-center justify-center gap-2 rounded-full border border-purple-200 bg-white px-4 py-2 text-sm font-semibold text-purple-700 transition hover:border-purple-300 hover:text-purple-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-600"
+                          >
+                            Отправить push
+                          </Link>
+                        </div>
                       </div>
                     )}
 
                   {!userHelpers.isSuperAdmin(user) && (
-                    <div className="space-y-3 rounded-2xl border border-blue-100 bg-blue-50/70 p-4">
+                    <div className="space-y-3 rounded-2xl border border-blue-100 bg-blue-50/70 p-4" id="push">
                       <div className="flex items-center gap-3">
                         <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-100 text-xl">
                           🔔
@@ -257,9 +410,12 @@ export default function Home() {
           </aside>
         </div>
 
-        <section className="mt-16 grid gap-6 rounded-3xl bg-white/70 p-6 shadow-lg backdrop-blur-sm sm:grid-cols-2 lg:mt-20">
+        <section
+          className="mt-16 grid gap-6 rounded-3xl bg-white/70 p-6 shadow-lg backdrop-blur-sm sm:grid-cols-2 lg:mt-20"
+          aria-labelledby="features-title"
+        >
           <article className="space-y-3 rounded-2xl border border-slate-100 bg-white/80 p-6">
-            <h3 className="text-lg font-semibold text-slate-900">
+            <h3 className="text-lg font-semibold text-slate-900" id="features-title">
               📱 Быстрый доступ офлайн
             </h3>
             <p className="text-sm text-slate-600">
@@ -288,7 +444,10 @@ export default function Home() {
           </article>
         </section>
 
-        <section className="mt-14 rounded-3xl border border-emerald-100 bg-emerald-50/80 p-8 shadow-md backdrop-blur-sm sm:p-10">
+        <section
+          id="offline"
+          className="mt-14 rounded-3xl border border-emerald-100 bg-emerald-50/80 p-8 shadow-md backdrop-blur-sm sm:p-10"
+        >
           <h3 className="text-2xl font-bold text-emerald-900">
             💡 Советы по работе в офлайне
           </h3>
