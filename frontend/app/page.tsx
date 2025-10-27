@@ -135,6 +135,8 @@ export default function Home() {
               strokeLinecap="round"
               strokeLinejoin="round"
               className="h-5 w-5"
+              aria-label={isMobileNavOpen ? "Закрыть меню" : "Открыть меню"}
+              role="img"
             >
               {isMobileNavOpen ? (
                 <path d="M18 6 6 18M6 6l12 12" />
