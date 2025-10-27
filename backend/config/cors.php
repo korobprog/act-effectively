@@ -17,6 +17,7 @@ return [
         'http://localhost:3000',
         'http://localhost:3001',
         'https://act-effectively.books-ved.ru',
+        'https://api.act-effectively.books-ved.ru',
     ]),
 
     'allowed_origins_patterns' => [],
