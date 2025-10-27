@@ -46,16 +46,13 @@ Route::middleware('auth:sanctum')->get('/user-info', [ApiController::class, 'use
 
 // Push notification routes
 Route::middleware('auth:sanctum')->group(function () {
-    // Admin routes (только для супер-администратора)
-    Route::middleware(function ($request, $next) {
-        if (!$request->user()->isSuperAdmin()) {
-            return response()->json(['message' => 'Доступ запрещен'], 403);
-        }
-        return $next($request);
-    })->group(function () {
-        Route::post('/notifications/send/user/{id}', [NotificationController::class, 'sendToUser']);
-        Route::post('/notifications/send/all-users', [NotificationController::class, 'sendToAllUsers']);
-        Route::post('/notifications/send/all-admins', [NotificationController::class, 'sendToAllAdmins']);
-        Route::get('/notifications/subscribers', [NotificationController::class, 'subscribers']);
-    });
+    // Subscribe/Unsubscribe for current user
+    Route::post('/webpush/subscribe', [NotificationController::class, 'subscribe']);
+    Route::post('/webpush/unsubscribe', [NotificationController::class, 'unsubscribe']);
+    
+    // Admin notification sending routes
+    Route::post('/notifications/send/user/{id}', [NotificationController::class, 'sendToUser']);
+    Route::post('/notifications/send/all-users', [NotificationController::class, 'sendToAllUsers']);
+    Route::post('/notifications/send/all-admins', [NotificationController::class, 'sendToAllAdmins']);
+    Route::get('/notifications/subscribers', [NotificationController::class, 'subscribers']);
 });

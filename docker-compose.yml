@@ -7,8 +7,9 @@ services:
       dockerfile: Dockerfile
     container_name: laravel_app
     restart: unless-stopped
-    volumes:
-      - ./backend/storage:/var/www/storage
+    user: root
+    # volumes:
+    #   - ./backend:/var/www:rw
     ports:
       - "8000:8000"
     networks:

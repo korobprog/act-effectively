@@ -2,11 +2,13 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { authApi, userHelpers, type User } from "@/lib/api/auth";
+import { authApi, type User, userHelpers } from "@/lib/api/auth";
+import { subscribeToPushNotifications } from "@/lib/push-notifications";
 
 export default function Home() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState<User | null>(null);
+  const [subscriptionStatus, setSubscriptionStatus] = useState<string>("");
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -22,6 +24,21 @@ export default function Home() {
     await authApi.logout();
     setIsAuthenticated(false);
     setUser(null);
+  };
+
+  const handleSubscribeToPush = async () => {
+    try {
+      setSubscriptionStatus("Подписка...");
+      const success = await subscribeToPushNotifications();
+      if (success) {
+        setSubscriptionStatus("✓ Подписка успешна!");
+      } else {
+        setSubscriptionStatus("Ошибка подписки");
+      }
+    } catch (error) {
+      console.error("Ошибка подписки:", error);
+      setSubscriptionStatus("Ошибка: " + (error as Error).message);
+    }
   };
 
   return (
@@ -43,7 +60,7 @@ export default function Home() {
                 </h2>
                 <p className="text-gray-600 mb-1">Email: {user.email}</p>
                 <p className="text-gray-600 mb-4">Роль: {user.role}</p>
-                
+
                 {/* Показать бейдж роли */}
                 <div className="inline-block">
                   {userHelpers.isSuperAdmin(user) && (
@@ -51,11 +68,12 @@ export default function Home() {
                       🔐 Супер-Администратор
                     </span>
                   )}
-                  {userHelpers.isAdmin(user) && !userHelpers.isSuperAdmin(user) && (
-                    <span className="bg-purple-600 text-white px-4 py-2 rounded-full text-sm font-semibold">
-                      👨‍💼 Администратор
-                    </span>
-                  )}
+                  {userHelpers.isAdmin(user) &&
+                    !userHelpers.isSuperAdmin(user) && (
+                      <span className="bg-purple-600 text-white px-4 py-2 rounded-full text-sm font-semibold">
+                        👨‍💼 Администратор
+                      </span>
+                    )}
                   {userHelpers.isUser(user) && (
                     <span className="bg-gray-600 text-white px-4 py-2 rounded-full text-sm font-semibold">
                       👤 Пользователь
@@ -90,6 +108,27 @@ export default function Home() {
                   <p className="text-purple-700">
                     У вас есть права администратора
                   </p>
+                </div>
+              )}
+
+              {!userHelpers.isSuperAdmin(user) && (
+                <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-4 mb-4">
+                  <h3 className="text-lg font-bold text-blue-900 mb-2">
+                    📢 Push-уведомления
+                  </h3>
+                  <p className="text-blue-700 mb-3 text-sm">
+                    Подпишитесь на push-уведомления для получения важных обновлений
+                  </p>
+                  <button
+                    type="button"
+                    onClick={handleSubscribeToPush}
+                    className="bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-blue-700 transition text-sm"
+                  >
+                    🔔 Подписаться на уведомления
+                  </button>
+                  {subscriptionStatus && (
+                    <p className="text-sm mt-2 text-gray-600">{subscriptionStatus}</p>
+                  )}
                 </div>
               )}
 

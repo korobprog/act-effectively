@@ -7,6 +7,11 @@
     "backend:stop": "docker-compose down",
     "backend:logs": "docker-compose logs -f app",
     "backend:restart": "docker-compose restart app",
-    "backend:status": "docker ps --filter name=laravel_"
+    "backend:status": "docker ps --filter name=laravel_",
+    "frontend:dev": "cd frontend && npm run dev",
+    "frontend:build": "cd frontend && npm run build",
+    "frontend:start": "cd frontend && npm run start",
+    "frontend:lint": "cd frontend && npm run lint",
+    "frontend:format": "cd frontend && npm run format"
   }
 }

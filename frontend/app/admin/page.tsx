@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
-import { adminApi, authApi, userHelpers, type User } from "@/lib/api/auth";
+import { adminApi, authApi, type User, userHelpers } from "@/lib/api/auth";
 
 export default function AdminPage() {
   const router = useRouter();
@@ -10,12 +10,19 @@ export default function AdminPage() {
   const [admins, setAdmins] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
+
   // Admin registration form state
   const [showForm, setShowForm] = useState(false);
-  const [formData, setFormData] = useState({ name: "", email: "", password: "" });
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+  });
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [createdAdmin, setCreatedAdmin] = useState<{ email: string; password: string } | null>(null);
+  const [createdAdmin, setCreatedAdmin] = useState<{
+    email: string;
+    password: string;
+  } | null>(null);
 
   const checkAuth = useCallback(async () => {
     try {
@@ -53,21 +60,24 @@ export default function AdminPage() {
     const numbers = "0123456789";
     const symbols = "!@#$%^&*";
     const allChars = uppercase + lowercase + numbers + symbols;
-    
+
     let password = "";
     // Ensure at least one character from each category
     password += uppercase[Math.floor(Math.random() * uppercase.length)];
     password += lowercase[Math.floor(Math.random() * lowercase.length)];
     password += numbers[Math.floor(Math.random() * numbers.length)];
     password += symbols[Math.floor(Math.random() * symbols.length)];
-    
+
     // Fill the rest
     for (let i = password.length; i < length; i++) {
       password += allChars[Math.floor(Math.random() * allChars.length)];
     }
-    
+
     // Shuffle the password
-    return password.split("").sort(() => Math.random() - 0.5).join("");
+    return password
+      .split("")
+      .sort(() => Math.random() - 0.5)
+      .join("");
   };
 
   const handleGeneratePassword = () => {
@@ -88,15 +98,24 @@ export default function AdminPage() {
     setError(null);
 
     try {
-      const response = await adminApi.createAdmin(formData.name, formData.email, formData.password);
+      const response = await adminApi.createAdmin(
+        formData.name,
+        formData.email,
+        formData.password,
+      );
       setCreatedAdmin({ email: formData.email, password: response.password });
       setFormData({ name: "", email: "", password: "" });
       setShowForm(false);
       loadAdmins();
     } catch (error) {
-      if (error && typeof error === 'object' && 'response' in error) {
-        const axiosError = error as { response?: { data?: { message?: string } } };
-        setError(axiosError.response?.data?.message || "Ошибка создания администратора");
+      if (error && typeof error === "object" && "response" in error) {
+        const axiosError = error as {
+          response?: { data?: { message?: string } };
+        };
+        setError(
+          axiosError.response?.data?.message ||
+            "Ошибка создания администратора",
+        );
       } else {
         setError("Ошибка создания администратора");
       }
@@ -114,9 +133,14 @@ export default function AdminPage() {
       await adminApi.deleteAdmin(id);
       loadAdmins();
     } catch (error) {
-      if (error && typeof error === 'object' && 'response' in error) {
-        const axiosError = error as { response?: { data?: { message?: string } } };
-        setError(axiosError.response?.data?.message || "Ошибка удаления администратора");
+      if (error && typeof error === "object" && "response" in error) {
+        const axiosError = error as {
+          response?: { data?: { message?: string } };
+        };
+        setError(
+          axiosError.response?.data?.message ||
+            "Ошибка удаления администратора",
+        );
       } else {
         setError("Ошибка удаления администратора");
       }
@@ -131,7 +155,11 @@ export default function AdminPage() {
   }, [user, checkAuth, loadAdmins]);
 
   if (isLoading) {
-    return <div className="min-h-screen flex items-center justify-center">Загрузка...</div>;
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        Загрузка...
+      </div>
+    );
   }
 
   if (!user || !userHelpers.isSuperAdmin(user)) {
@@ -143,8 +171,17 @@ export default function AdminPage() {
       <div className="max-w-4xl mx-auto px-4">
         <div className="bg-white rounded-lg shadow p-6 mb-6">
           <div className="flex items-center justify-between mb-4">
-            <h1 className="text-2xl font-bold text-gray-900">🔐 Панель супер-администратора</h1>
+            <h1 className="text-2xl font-bold text-gray-900">
+              🔐 Панель супер-администратора
+            </h1>
             <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => router.push("/admin/notifications")}
+                className="bg-yellow-600 text-white px-4 py-2 rounded hover:bg-yellow-700"
+              >
+                📢 Push-уведомления
+              </button>
               <button
                 type="button"
                 onClick={() => router.push("/admin/users")}
@@ -174,9 +211,15 @@ export default function AdminPage() {
 
         {createdAdmin && (
           <div className="bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded mb-4">
-            <p className="font-semibold mb-2">✅ Администратор успешно создан!</p>
-            <p className="mb-2">Логин: <strong>{createdAdmin.email}</strong></p>
-            <p className="mb-2">Пароль: <strong>{createdAdmin.password}</strong></p>
+            <p className="font-semibold mb-2">
+              ✅ Администратор успешно создан!
+            </p>
+            <p className="mb-2">
+              Логин: <strong>{createdAdmin.email}</strong>
+            </p>
+            <p className="mb-2">
+              Пароль: <strong>{createdAdmin.password}</strong>
+            </p>
             <button
               type="button"
               onClick={handleCopyCredentials}
@@ -197,7 +240,9 @@ export default function AdminPage() {
         <div className="bg-white rounded-lg shadow mb-6">
           <div className="p-6 border-b">
             <div className="flex items-center justify-between">
-              <h2 className="text-xl font-bold text-gray-900">Создать нового администратора</h2>
+              <h2 className="text-xl font-bold text-gray-900">
+                Создать нового администратора
+              </h2>
               <button
                 type="button"
                 onClick={() => setShowForm(!showForm)}
@@ -211,7 +256,10 @@ export default function AdminPage() {
             <div className="p-6">
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                  <label htmlFor="admin-name" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label
+                    htmlFor="admin-name"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
                     Имя
                   </label>
                   <input
@@ -219,12 +267,17 @@ export default function AdminPage() {
                     type="text"
                     required
                     value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, name: e.target.value })
+                    }
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder:text-gray-400"
                   />
                 </div>
                 <div>
-                  <label htmlFor="admin-email" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label
+                    htmlFor="admin-email"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
                     Email
                   </label>
                   <input
@@ -232,12 +285,17 @@ export default function AdminPage() {
                     type="email"
                     required
                     value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, email: e.target.value })
+                    }
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder:text-gray-400"
                   />
                 </div>
                 <div>
-                  <label htmlFor="admin-password" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label
+                    htmlFor="admin-password"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
                     Пароль
                   </label>
                   <div className="flex gap-2">
@@ -247,7 +305,9 @@ export default function AdminPage() {
                       required
                       minLength={8}
                       value={formData.password}
-                      onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                      onChange={(e) =>
+                        setFormData({ ...formData, password: e.target.value })
+                      }
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder:text-gray-400"
                     />
                     <button
@@ -273,11 +333,15 @@ export default function AdminPage() {
 
         <div className="bg-white rounded-lg shadow">
           <div className="p-6 border-b">
-            <h2 className="text-xl font-bold text-gray-900">Список администраторов</h2>
+            <h2 className="text-xl font-bold text-gray-900">
+              Список администраторов
+            </h2>
           </div>
           <div className="p-6">
             {admins.length === 0 ? (
-              <p className="text-gray-600">Нет зарегистрированных администраторов</p>
+              <p className="text-gray-600">
+                Нет зарегистрированных администраторов
+              </p>
             ) : (
               <div className="space-y-4">
                 {admins.map((admin) => (
@@ -286,9 +350,13 @@ export default function AdminPage() {
                     className="flex items-center justify-between p-4 border rounded-lg"
                   >
                     <div>
-                      <p className="font-semibold text-gray-900">{admin.name}</p>
+                      <p className="font-semibold text-gray-900">
+                        {admin.name}
+                      </p>
                       <p className="text-sm text-gray-700">{admin.email}</p>
-                      <p className="text-xs font-medium text-gray-800">Роль: {admin.role}</p>
+                      <p className="text-xs font-medium text-gray-800">
+                        Роль: {admin.role}
+                      </p>
                     </div>
                     {admin.id !== user.id && (
                       <button

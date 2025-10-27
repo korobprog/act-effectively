@@ -131,6 +131,13 @@ export default function UsersManagementPage() {
             <div className="flex gap-2">
               <button
                 type="button"
+                onClick={() => router.push("/admin/notifications")}
+                className="bg-yellow-600 text-white px-4 py-2 rounded hover:bg-yellow-700"
+              >
+                📢 Push-уведомления
+              </button>
+              <button
+                type="button"
                 onClick={() => router.push("/admin")}
                 className="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700"
               >
@@ -216,7 +223,7 @@ export default function UsersManagementPage() {
                           </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                          {targetUser.created_at ? new Date(targetUser.created_at).toLocaleDateString('ru-RU') : '—'}
+                          —
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                           <div className="flex items-center gap-2">

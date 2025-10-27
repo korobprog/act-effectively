@@ -52,7 +52,7 @@ chmod -R 775 /var/www/storage 2>/dev/null || true\n\
 chmod -R 775 /var/www/bootstrap/cache 2>/dev/null || true\n\
 \n\
 # Start Laravel server\n\
-exec php artisan serve --host=0.0.0.0 --port=8000\n' > /entrypoint.sh && \
+exec php /var/www/artisan serve --host=0.0.0.0 --port=8000\n' > /entrypoint.sh && \
     chmod +x /entrypoint.sh
 
 # Expose port 8000

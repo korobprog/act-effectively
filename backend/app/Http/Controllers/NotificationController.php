@@ -10,6 +10,10 @@ class NotificationController extends Controller
 {
     public function sendToUser(Request $request, $userId)
     {
+        if (!$request->user()->isSuperAdmin()) {
+            return response()->json(['message' => 'Доступ запрещен'], 403);
+        }
+
         $request->validate([
             'title' => 'required|string|max:255',
             'body' => 'required|string',
@@ -21,11 +25,20 @@ class NotificationController extends Controller
         
         $recipient->notify($notification);
 
-        return response()->json(['message' => 'Уведомление отправлено']);
+        $devices = $recipient->pushSubscriptions()->count();
+
+        return response()->json([
+            'message' => 'Уведомление отправлено',
+            'devices' => $devices
+        ]);
     }
 
     public function sendToAllUsers(Request $request)
     {
+        if (!$request->user()->isSuperAdmin()) {
+            return response()->json(['message' => 'Доступ запрещен'], 403);
+        }
+
         $request->validate([
             'title' => 'required|string|max:255',
             'body' => 'required|string',
@@ -35,12 +48,16 @@ class NotificationController extends Controller
         $users = User::where('role', User::ROLE_USER)->get();
         $notification = new PushNotification($request->title, $request->body, $request->url);
 
+        $totalDevices = 0;
         foreach ($users as $user) {
             $user->notify($notification);
+            $totalDevices += $user->pushSubscriptions()->count();
         }
 
         return response()->json([
-            'message' => "Уведомление отправлено {$users->count()} пользователям"
+            'message' => "Уведомление отправлено",
+            'count' => $totalDevices,
+            'devices' => $totalDevices
         ]);
     }
 
@@ -59,12 +76,16 @@ class NotificationController extends Controller
         $admins = User::whereIn('role', [User::ROLE_ADMIN, User::ROLE_SUPER_ADMIN])->get();
         $notification = new PushNotification($request->title, $request->body, $request->url);
 
+        $totalDevices = 0;
         foreach ($admins as $admin) {
             $admin->notify($notification);
+            $totalDevices += $admin->pushSubscriptions()->count();
         }
 
         return response()->json([
-            'message' => "Уведомление отправлено {$admins->count()} администраторам"
+            'message' => "Уведомление отправлено",
+            'count' => $totalDevices,
+            'devices' => $totalDevices
         ]);
     }
 
@@ -86,5 +107,37 @@ class NotificationController extends Controller
             });
 
         return response()->json(['subscribers' => $subscribers]);
+    }
+
+    public function subscribe(Request $request)
+    {
+        $user = $request->user();
+        
+        $request->validate([
+            'endpoint' => 'required|url',
+            'keys.p256dh' => 'required',
+            'keys.auth' => 'required',
+        ]);
+
+        $user->updatePushSubscription(
+            $request->input('endpoint'),
+            $request->input('keys.p256dh'),
+            $request->input('keys.auth')
+        );
+
+        return response()->json(['message' => 'Подписка успешно сохранена'], 201);
+    }
+
+    public function unsubscribe(Request $request)
+    {
+        $user = $request->user();
+        
+        $request->validate([
+            'endpoint' => 'required|url',
+        ]);
+
+        $user->deletePushSubscription($request->input('endpoint'));
+
+        return response()->json(['message' => 'Подписка удалена'], 200);
     }
 }
