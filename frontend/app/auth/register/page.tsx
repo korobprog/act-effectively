@@ -28,7 +28,6 @@ export default function RegisterPage() {
     try {
       const { name, email, password } = data;
       await authApi.register(name, email, password);
-      // Redirect to login page after successful registration
       router.push("/auth/login?registered=true");
     } catch (err: unknown) {
       const error = err as {
@@ -71,7 +70,7 @@ export default function RegisterPage() {
               id="name"
               type="text"
               {...register("name")}
-              className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition ${
+              className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition text-gray-900 placeholder:text-gray-400 ${
                 errors.name ? "border-red-500" : "border-gray-300"
               }`}
               placeholder="Иван Иванов"
@@ -92,7 +91,7 @@ export default function RegisterPage() {
               id="email"
               type="email"
               {...register("email")}
-              className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition ${
+              className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition text-gray-900 placeholder:text-gray-400 ${
                 errors.email ? "border-red-500" : "border-gray-300"
               }`}
               placeholder="your@email.com"
@@ -115,7 +114,7 @@ export default function RegisterPage() {
               id="password"
               type="password"
               {...register("password")}
-              className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition ${
+              className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition text-gray-900 placeholder:text-gray-400 ${
                 errors.password ? "border-red-500" : "border-gray-300"
               }`}
               placeholder="••••••••"
@@ -138,7 +137,7 @@ export default function RegisterPage() {
               id="confirmPassword"
               type="password"
               {...register("confirmPassword")}
-              className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition ${
+              className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition text-gray-900 placeholder:text-gray-400 ${
                 errors.confirmPassword ? "border-red-500" : "border-gray-300"
               }`}
               placeholder="••••••••"

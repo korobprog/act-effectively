@@ -31,7 +31,6 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
-            'password' => 'hashed',
         ];
     }
 
@@ -50,13 +49,17 @@ class User extends Authenticatable
         return $this->role === self::ROLE_USER;
     }
 
-    // Методы для проверки прав
     public function hasAdminAccess(): bool
     {
         return $this->isAdmin();
     }
 
     public function canManageAdmins(): bool
+    {
+        return $this->isSuperAdmin();
+    }
+
+    public function canManageUsers(): bool
     {
         return $this->isSuperAdmin();
     }

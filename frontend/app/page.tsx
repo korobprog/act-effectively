@@ -2,16 +2,11 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { authApi } from "@/lib/api/auth";
-
-interface UserData {
-  name: string;
-  email: string;
-}
+import { authApi, userHelpers, type User } from "@/lib/api/auth";
 
 export default function Home() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [user, setUser] = useState<UserData | null>(null);
+  const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -39,19 +34,66 @@ export default function Home() {
           <p className="text-xl text-gray-700 mb-2">
             Этот сайт работает <strong>офлайн</strong> 🚀
           </p>
-          <p className="text-lg text-gray-600 mb-12">
-            Вы можете добавить его на главный экран и использовать без интернета.
-          </p>
 
           {isAuthenticated && user ? (
             <div className="bg-white rounded-2xl shadow-xl p-8 mb-8">
-              <div className="flex items-center justify-between">
-                <div className="text-left">
-                  <h2 className="text-2xl font-bold text-gray-900 mb-2">
-                    Добро пожаловать, {user.name}!
-                  </h2>
-                  <p className="text-gray-600">{user.email}</p>
+              <div className="text-left mb-6">
+                <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                  Добро пожаловать, {user.name}!
+                </h2>
+                <p className="text-gray-600 mb-1">Email: {user.email}</p>
+                <p className="text-gray-600 mb-4">Роль: {user.role}</p>
+                
+                {/* Показать бейдж роли */}
+                <div className="inline-block">
+                  {userHelpers.isSuperAdmin(user) && (
+                    <span className="bg-red-600 text-white px-4 py-2 rounded-full text-sm font-semibold">
+                      🔐 Супер-Администратор
+                    </span>
+                  )}
+                  {userHelpers.isAdmin(user) && !userHelpers.isSuperAdmin(user) && (
+                    <span className="bg-purple-600 text-white px-4 py-2 rounded-full text-sm font-semibold">
+                      👨‍💼 Администратор
+                    </span>
+                  )}
+                  {userHelpers.isUser(user) && (
+                    <span className="bg-gray-600 text-white px-4 py-2 rounded-full text-sm font-semibold">
+                      👤 Пользователь
+                    </span>
+                  )}
                 </div>
+              </div>
+
+              {/* Показать панель администратора */}
+              {userHelpers.isSuperAdmin(user) && (
+                <div className="bg-red-50 border-2 border-red-200 rounded-lg p-4 mb-4">
+                  <h3 className="text-xl font-bold text-red-900 mb-3">
+                    🔐 Панель супер-администратора
+                  </h3>
+                  <p className="text-red-700 mb-3">
+                    У вас есть полные права доступа к системе
+                  </p>
+                  <Link
+                    href="/admin"
+                    className="inline-block bg-red-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-red-700 transition"
+                  >
+                    Управление администраторами
+                  </Link>
+                </div>
+              )}
+
+              {userHelpers.isAdmin(user) && !userHelpers.isSuperAdmin(user) && (
+                <div className="bg-purple-50 border-2 border-purple-200 rounded-lg p-4 mb-4">
+                  <h3 className="text-xl font-bold text-purple-900 mb-2">
+                    👨‍💼 Панель администратора
+                  </h3>
+                  <p className="text-purple-700">
+                    У вас есть права администратора
+                  </p>
+                </div>
+              )}
+
+              <div className="flex justify-end mt-4">
                 <button
                   type="button"
                   onClick={handleLogout}

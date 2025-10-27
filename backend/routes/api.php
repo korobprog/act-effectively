@@ -26,13 +26,19 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 // Admin routes (только для администраторов)
 Route::middleware('auth:sanctum')->group(function () {
+    // User management routes (must be defined before /admin/{id} to avoid route conflicts)
+    Route::get('/admin/users', [AdminController::class, 'listUsers']);
+    Route::delete('/admin/users/{id}', [AdminController::class, 'deleteUser']);
+    Route::patch('/admin/users/{id}/role', [AdminController::class, 'updateUserRole']);
+    
+    // Admin management routes
     Route::post('/admin/create', [AdminController::class, 'createAdmin']);
     Route::get('/admin/list', [AdminController::class, 'listAdmins']);
     Route::delete('/admin/{id}', [AdminController::class, 'deleteAdmin']);
+});
 
-    // API Controller routes
+// API Controller routes
 Route::get('/health', [ApiController::class, 'health']);
 Route::get('/test', [ApiController::class, 'test']);
 Route::get('/features', [ApiController::class, 'features']);
 Route::middleware('auth:sanctum')->get('/user-info', [ApiController::class, 'user']);
-});

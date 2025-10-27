@@ -71,7 +71,7 @@ export default function LoginPage() {
               id="email"
               type="email"
               {...register("email")}
-              className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition ${
+              className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition text-gray-900 placeholder:text-gray-400 ${
                 errors.email ? "border-red-500" : "border-gray-300"
               }`}
               placeholder="your@email.com"
@@ -94,7 +94,7 @@ export default function LoginPage() {
               id="password"
               type="password"
               {...register("password")}
-              className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition ${
+              className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition text-gray-900 placeholder:text-gray-400 ${
                 errors.password ? "border-red-500" : "border-gray-300"
               }`}
               placeholder="••••••••"
