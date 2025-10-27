@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
@@ -28,32 +29,62 @@ class AuthController extends Controller
     
         return response()->json([
             'user' => $user,
+            'token' => $token,
             'message' => 'Пользователь успешно зарегистрирован',
         ], 201);
     }
 
     public function login(Request $request)
     {
-        $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
-        ]);
-
-        $user = User::where('email', $request->email)->first();
-
-        if (!$user || !Hash::check($request->password, $user->password)) {
-            throw ValidationException::withMessages([
-                'email' => ['The provided credentials are incorrect.'],
+        try {
+            $request->validate([
+                'email' => 'required|email',
+                'password' => 'required',
             ]);
+
+            Log::info('Login attempt', ['email' => $request->email]);
+
+            $user = User::where('email', $request->email)->first();
+
+            if (!$user) {
+                Log::warning('Login failed: User not found', ['email' => $request->email]);
+                throw ValidationException::withMessages([
+                    'email' => ['The provided credentials are incorrect.'],
+                ]);
+            }
+
+            if (!Hash::check($request->password, $user->password)) {
+                Log::warning('Login failed: Invalid password', ['email' => $request->email]);
+                throw ValidationException::withMessages([
+                    'email' => ['The provided credentials are incorrect.'],
+                ]);
+            }
+
+            $token = $user->createToken('auth_token')->plainTextToken;
+
+            Log::info('Login successful', ['email' => $request->email, 'user_id' => $user->id]);
+
+            return response()->json([
+                'user' => $user,
+                'token' => $token,
+                'message' => 'Вход выполнен успешно',
+            ], 200);
+        } catch (ValidationException $e) {
+            // Re-throw validation exceptions
+            throw $e;
+        } catch (\Exception $e) {
+            Log::error('Login error: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString(),
+                'email' => $request->email ?? null,
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
+            
+            return response()->json([
+                'message' => 'Произошла ошибка при входе',
+                'error' => app()->environment('local') ? $e->getMessage() : null,
+            ], 500);
         }
-
-        $token = $user->createToken('auth_token')->plainTextToken;
-
-        return response()->json([
-            'user' => $user,
-            'token' => $token,
-            'message' => 'Вход выполнен успешно',
-        ], 200);
     }
 
     public function logout(Request $request)
