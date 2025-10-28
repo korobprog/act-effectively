@@ -80,43 +80,27 @@ export default function Home() {
     setIsMobileNavOpen(false);
   };
 
-  // Закрываем мобильное меню при скролле (с небольшой задержкой)
+  // Закрываем меню при клике на ссылки или кнопки в меню
   useEffect(() => {
-    let scrollTimer: NodeJS.Timeout;
-    
-    const handleScroll = () => {
-      if (isMobileNavOpen) {
-        clearTimeout(scrollTimer);
-        scrollTimer = setTimeout(() => {
-          setIsMobileNavOpen(false);
-        }, 150); // Небольшая задержка чтобы избежать конфликтов с кликами
-      }
-    };
-
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-      clearTimeout(scrollTimer);
-    };
-  }, [isMobileNavOpen]);
-
-  // Закрываем мобильное меню при клике вне меню
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      const target = e.target as HTMLElement;
-      // Не закрываем если клик по кнопке toggle или внутри меню
-      if (isMobileNavOpen && !target.closest("header nav") && !target.closest('button[aria-expanded]')) {
-        setIsMobileNavOpen(false);
-      }
+    const handleLinkClick = () => {
+      setIsMobileNavOpen(false);
     };
 
     if (isMobileNavOpen) {
-      // Добавляем небольшую задержку чтобы onClick на ссылках успел обработаться
-      setTimeout(() => {
-        document.addEventListener("click", handleClickOutside);
-      }, 0);
-      
-      return () => document.removeEventListener("click", handleClickOutside);
+      // Добавляем слушатель на все ссылки и кнопки внутри мобильного меню
+      const mobileNav = document.querySelector('[data-mobile-nav]');
+      if (mobileNav) {
+        const links = mobileNav.querySelectorAll('a, button');
+        links.forEach((link) => {
+          link.addEventListener('click', handleLinkClick);
+        });
+
+        return () => {
+          links.forEach((link) => {
+            link.removeEventListener('click', handleLinkClick);
+          });
+        };
+      }
     }
   }, [isMobileNavOpen]);
 
@@ -192,7 +176,7 @@ export default function Home() {
         </div>
 
         <div className={`${isMobileNavOpen ? "max-h-80" : "max-h-0"} overflow-hidden border-t border-slate-200/60 transition-[max-height] duration-300 ease-in-out sm:hidden`}>
-          <nav className="space-y-2 px-4 py-4 text-sm font-medium text-slate-600">
+          <nav data-mobile-nav className="space-y-2 px-4 py-4 text-sm font-medium text-slate-600">
             {navigation.map((item) => (
               <Link
                 key={item.href}
