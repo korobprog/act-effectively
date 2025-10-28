@@ -80,29 +80,42 @@ export default function Home() {
     setIsMobileNavOpen(false);
   };
 
-  // Закрываем мобильное меню при скролле
+  // Закрываем мобильное меню при скролле (с небольшой задержкой)
   useEffect(() => {
+    let scrollTimer: NodeJS.Timeout;
+    
     const handleScroll = () => {
       if (isMobileNavOpen) {
-        setIsMobileNavOpen(false);
+        clearTimeout(scrollTimer);
+        scrollTimer = setTimeout(() => {
+          setIsMobileNavOpen(false);
+        }, 150); // Небольшая задержка чтобы избежать конфликтов с кликами
       }
     };
 
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      clearTimeout(scrollTimer);
+    };
   }, [isMobileNavOpen]);
 
   // Закрываем мобильное меню при клике вне меню
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
-      if (isMobileNavOpen && !target.closest("nav") && !target.closest('[aria-expanded]')) {
+      // Не закрываем если клик по кнопке toggle или внутри меню
+      if (isMobileNavOpen && !target.closest("header nav") && !target.closest('button[aria-expanded]')) {
         setIsMobileNavOpen(false);
       }
     };
 
     if (isMobileNavOpen) {
-      document.addEventListener("click", handleClickOutside);
+      // Добавляем небольшую задержку чтобы onClick на ссылках успел обработаться
+      setTimeout(() => {
+        document.addEventListener("click", handleClickOutside);
+      }, 0);
+      
       return () => document.removeEventListener("click", handleClickOutside);
     }
   }, [isMobileNavOpen]);
