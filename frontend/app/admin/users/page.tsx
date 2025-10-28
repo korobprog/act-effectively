@@ -126,29 +126,29 @@ export default function UsersManagementPage() {
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-6xl mx-auto px-4">
         <div className="bg-white rounded-lg shadow p-6 mb-6">
-          <div className="flex items-center justify-between mb-4">
-            <h1 className="text-2xl font-bold text-gray-900">👥 Управление пользователями</h1>
-            <div className="flex gap-2">
+          <div className="flex flex-col gap-4 mb-4 md:flex-row md:items-center md:justify-between">
+            <h1 className="text-xl md:text-2xl font-bold text-gray-900">👥 Управление пользователями</h1>
+            <div className="flex flex-col sm:flex-row gap-2">
               <button
                 type="button"
                 onClick={() => router.push("/admin/notifications")}
-                className="bg-yellow-600 text-white px-4 py-2 rounded hover:bg-yellow-700"
+                className="bg-yellow-600 text-white px-4 py-2 rounded hover:bg-yellow-700 whitespace-nowrap text-sm"
               >
-                📢 Push-уведомления
+                📢 Push
               </button>
               <button
                 type="button"
                 onClick={() => router.push("/admin")}
-                className="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700"
+                className="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700 whitespace-nowrap text-sm"
               >
-                Управление администраторами
+                Админ-панель
               </button>
               <button
                 type="button"
                 onClick={() => router.push("/")}
-                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 whitespace-nowrap text-sm"
               >
-                На главную
+                🏠 Главная
               </button>
             </div>
           </div>
