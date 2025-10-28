@@ -110,12 +110,32 @@ export default function AdminPage() {
     } catch (error) {
       if (error && typeof error === "object" && "response" in error) {
         const axiosError = error as {
-          response?: { data?: { message?: string } };
+          response?: { 
+            data?: { 
+              message?: string;
+              errors?: Record<string, string[]>;
+            } 
+          };
         };
-        setError(
-          axiosError.response?.data?.message ||
-            "Ошибка создания администратора",
-        );
+        
+        const errors = axiosError.response?.data?.errors;
+        if (errors) {
+          if (errors.email) {
+            setError("Администратор с таким email уже существует");
+          } else if (errors.password) {
+            setError("Пароль должен содержать минимум 8 символов");
+          } else if (errors.name) {
+            setError("Имя обязательно для заполнения");
+          } else {
+            const firstError = Object.values(errors)[0]?.[0];
+            setError(firstError || "Ошибка валидации");
+          }
+        } else {
+          setError(
+            axiosError.response?.data?.message ||
+              "Ошибка создания администратора"
+          );
+        }
       } else {
         setError("Ошибка создания администратора");
       }
