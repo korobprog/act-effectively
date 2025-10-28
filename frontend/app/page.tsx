@@ -80,6 +80,33 @@ export default function Home() {
     setIsMobileNavOpen(false);
   };
 
+  // Закрываем мобильное меню при скролле
+  useEffect(() => {
+    const handleScroll = () => {
+      if (isMobileNavOpen) {
+        setIsMobileNavOpen(false);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [isMobileNavOpen]);
+
+  // Закрываем мобильное меню при клике вне меню
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (isMobileNavOpen && !target.closest("nav") && !target.closest('[aria-expanded]')) {
+        setIsMobileNavOpen(false);
+      }
+    };
+
+    if (isMobileNavOpen) {
+      document.addEventListener("click", handleClickOutside);
+      return () => document.removeEventListener("click", handleClickOutside);
+    }
+  }, [isMobileNavOpen]);
+
   return (
     <main className="relative min-h-screen overflow-hidden bg-gradient-to-br from-sky-50 via-white to-indigo-100">
       <header className="sticky top-0 z-20 border-b border-slate-200/60 bg-white/80 backdrop-blur">
@@ -300,13 +327,13 @@ export default function Home() {
                       <div className="grid gap-2 sm:grid-cols-2">
                         <Link
                           href="/admin"
-                          className="inline-flex items-center justify-center gap-2 rounded-full bg-red-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600"
+                          className="inline-flex items-center justify-center gap-2 rounded-full bg-red-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600 whitespace-nowrap"
                         >
-                          Панель администрирования
+                          Админ-панель
                         </Link>
                         <Link
                           href="/admin/notifications"
-                          className="inline-flex items-center justify-center gap-2 rounded-full border border-red-200 bg-white px-4 py-2 text-sm font-semibold text-red-700 transition hover:border-red-300 hover:text-red-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600"
+                          className="inline-flex items-center justify-center gap-2 rounded-full border border-red-200 bg-white px-4 py-2 text-sm font-semibold text-red-700 transition hover:border-red-300 hover:text-red-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600 whitespace-nowrap"
                         >
                           Отправить push
                         </Link>
